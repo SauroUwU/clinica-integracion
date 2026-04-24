@@ -1,0 +1,40 @@
+openapi: 3.0.0
+info:
+  title: API de Admisiones SaludVital
+  description: Evolución del sistema de integración para pre-registros de pacientes.
+  version: 1.0.0
+paths:
+  /pre-registrations:
+    post:
+      summary: Crear un nuevo pre-registro de paciente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+      responses:
+        '201':
+          description: Registro creado exitosamente
+        '400':
+          description: Error de validación en los datos enviados
+components:
+  schemas:
+    Patient:
+      type: object
+      required: [patient_id, full_name, appointment_date, insurance_code]
+      properties:
+        patient_id:
+          type: string
+          example: "1001"
+        full_name:
+          type: string
+          example: "Ana Perez"
+        appointment_date:
+          type: string
+          format: date
+          example: "2026-05-10"
+        insurance_code:
+          type: string
+          enum: [IESS, PRIVADO, NINGUNO]
+          example: "IESS"
