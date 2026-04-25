@@ -4,7 +4,7 @@ pipeline {
     // Definimos las herramientas que Jenkins necesita (deben estar configuradas en Jenkins)
     tools {
         maven 'Maven 3.x' 
-        jdk 'jdk17'
+        jdk 'jdk25'
     }
 
     stages {
