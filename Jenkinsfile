@@ -24,22 +24,22 @@ pipeline {
             }
         }
 
-        // ETAPA 3: Elección -> Empaquetar (Generar el JAR)
+        // ETAPA 3: Empaquetar (Generar el JAR)
         stage('Empaquetar') {
             steps {
                 echo 'Generando el archivo JAR ejecutable...'
                 sh 'mvn package -DskipTests' 
-                echo '¡Bacán! El paquete está listo en la carpeta target.'
+                echo 'El paquete está listo en la carpeta target.'
             }
         }
     }
 
     post {
         success {
-            echo '¡Todo bien! El pipeline pasó sin tirones.'
+            echo 'El pipeline terminó sin errores'
         }
         failure {
-            echo '¡Chuta! Algo falló en la compilación o el empaquetado.'
+            echo 'Algo falló en la compilación o el empaquetado.'
         }
     }
 }
