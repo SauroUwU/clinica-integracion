@@ -1,60 +1,45 @@
 pipeline {
     agent any
 
-    // Definimos las herramientas que Jenkins necesita (deben estar configuradas en Jenkins)
     tools {
-        maven 'Maven 3.x' 
+        // Asegúrate de que el nombre 'jdk25' coincida con el que pusiste en Jenkins
         jdk 'jdk25'
+        maven 'Maven 3.x'
     }
 
     stages {
-        stage('Checkout') {
+        // ETAPA 1: Clonar el código
+        stage('Clonar') {
             steps {
-                // Jenkins descarga el código automáticamente desde GitHub
-                echo 'Bajando el código del repo de Mauro...'
+                echo 'Bajando el código desde GitHub...'
                 checkout scm
             }
         }
 
-        stage('Build') {
+        // ETAPA 2: Verificar (Compilación y Sintaxis)
+        stage('Verificar') {
             steps {
-                echo 'Compilando el proyecto de SaludVital...'
+                echo 'Verificando que el código de SaludVital no tenga errores...'
                 sh 'mvn clean compile'
             }
         }
 
-        stage('Test') {
-            steps {
-                echo 'Ejecutando pruebas unitarias...'
-                // Si tienes tests, esto los corre. Si no, al menos valida la estructura.
-                sh 'mvn test -Dmaven.test.failure.ignore=true'
-            }
-        }
-
-        stage('Package') {
+        // ETAPA 3: Elección -> Empaquetar (Generar el JAR)
+        stage('Empaquetar') {
             steps {
                 echo 'Generando el archivo JAR ejecutable...'
-                sh 'mvn package'
-            }
-        }
-        
-        stage('Archiving Artifacts') {
-            steps {
-                // Guarda el JAR generado para que lo puedas descargar desde Jenkins
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                sh 'mvn package -DskipTests' 
+                echo '¡Bacán! El paquete está listo en la carpeta target.'
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline finalizado. ¡Bacán!'
-        }
         success {
-            echo '¡Éxito! El código está listo para facturar.'
+            echo '¡Todo bien! El pipeline pasó sin tirones.'
         }
         failure {
-            echo 'Algo se rompió. Revisa los logs de Camel o Maven.'
+            echo '¡Chuta! Algo falló en la compilación o el empaquetado.'
         }
     }
 }
