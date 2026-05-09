@@ -9,8 +9,8 @@ pipeline {
     stages {
         stage('1. Preparación') {
             steps {
-                echo 'Clonando el repositorio...'
-                git url: 'https://github.com/SauroUwU/clinica-integracion.git', branch: 'main'
+                echo 'Clonando el repositorio mediante autenticación HTTPS estática...'
+                git url: 'https://SauroUwU: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@github.com/SauroUwU/clinica-integracion.git', branch: 'main'
             }
         }
 
@@ -37,7 +37,6 @@ pipeline {
             }
         }
 
-        // NUEVA ETAPA 1
         stage('4. Auditoría de Seguridad') {
             steps {
                 echo 'Ejecutando análisis de árbol de dependencias...'
@@ -54,7 +53,6 @@ pipeline {
             }
         }
 
-        // NUEVA ETAPA 2
         stage('6. Notificación de Despliegue') {
             steps {
                 echo 'Simulando notificación de estado a servicios externos...'
