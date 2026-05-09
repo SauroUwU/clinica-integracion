@@ -1,45 +1,48 @@
 pipeline {
     agent any
-
+    
     tools {
-        // Asegúrate de que el nombre 'jdk25' coincida con el que pusiste en Jenkins
         jdk 'jdk25'
         maven 'Maven 3.x'
     }
 
     stages {
-        // ETAPA 1: Clonar el código
-        stage('Clonar') {
+        stage('1. Preparación') {
             steps {
-                echo 'Bajando el código desde GitHub...'
-                checkout scm
+                // Aquí usamos el ID 'github-token' que creamos en Jenkins
+                git url: 'https://github.com/SauroUwU/clinica-integracion.git', 
+                    branch: 'main', 
+                    credentialsId: 'github-token'
             }
         }
 
-        // ETAPA 2: Verificar (Compilación y Sintaxis)
-        stage('Verificar') {
+        stage('2. Build') {
             steps {
-                echo 'Verificando que el código de SaludVital no tenga errores...'
                 sh 'mvn clean compile'
             }
         }
 
-        // ETAPA 3: Empaquetar (Generar el JAR)
-        stage('Empaquetar') {
-            steps {
-                echo 'Generando el archivo JAR ejecutable...'
-                sh 'mvn package -DskipTests' 
-                echo 'El paquete está listo en la carpeta target.'
+        stage('3. Pruebas y Análisis (Paralelo)') {
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        sh 'mvn test'
+                    }
+                }
+                stage('Static Analysis') {
+                    steps {
+                        echo 'Ejecutando análisis de estilo y calidad...'
+                        sh 'mvn verify -DskipTests'
+                    }
+                }
             }
         }
-    }
 
-    post {
-        success {
-            echo 'El pipeline terminó sin errores'
-        }
-        failure {
-            echo 'Algo falló en la compilación o el empaquetado.'
+        stage('4. Empaquetado') {
+            when { branch 'main' }
+            steps {
+                sh 'mvn package -DskipTests'
+            }
         }
     }
 }
